@@ -1,4 +1,17 @@
 function [time_array, particle_numbers] = gillespie(reactants, reactions, propensity, params, start_time, end_time, dt)
+%gillespie runs gillespie's algorithm once
+%
+%   reactants: two dimensional array of starting reactant values
+%   reactions: array describing reactions
+%   propensity: propensity function to be used
+%   params: two dimensional array of parameters
+%   start_time: simulation starting time
+%   end_time: simulation ending time
+%   dt: timesteps to use
+%
+%   time_vector: array of timesteps
+%   particle_numbers: 2D array of sims particle numbers over time
+
 
 time = start_time;
 time_array = start_time:dt:end_time;

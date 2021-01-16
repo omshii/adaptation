@@ -1,5 +1,3 @@
-%Simulation function
-
 reactants = [0 0]; %A and B
 
 %A production, A degradation, B production, B degradation

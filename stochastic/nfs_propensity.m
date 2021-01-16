@@ -1,10 +1,11 @@
 function [reaction_rates] = nfs_propensity(reactants, params)
-
-%reactants: one dimensional array of current reactant values
-%parameters: struct of parameters containing:
+%nfs_propensity describes reaction rates for nfs
+%
+%   reactants: one dimensional array of current reactant values
+%   parameters: struct of parameters containing:
 %               k1, k2, k3, K3, k4, K4, A0, B0, I
-
-%reaction_rates: array of 4 reaction rates
+%
+%   reaction_rates: array of 4 reaction rates
                     %A production
                     %A degradation
                     %B production

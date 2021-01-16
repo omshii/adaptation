@@ -1,4 +1,17 @@
 function [time_vector, complete_trajectory] = gillespie_vectorized(reactants, reactions, propensity, params, start_time, end_time, dt, sims)
+%gillespie_vectorized runs gillespie's algorithm a number of times
+%
+%   reactants: two dimensional array of starting reactant values
+%   reactions: array describing reactions
+%   propensity: propensity function to be used
+%   params: two dimensional array of parameters
+%   start_time: simulation starting time
+%   end_time: simulation ending time
+%   dt: timesteps to use
+%   sims: number of simulations
+%
+%   time_vector: array of timesteps
+%   complete_trajectory: 3D array of sims particle numbers over time
 
 reactants = repmat(reactants, sims, 1);
 time = repmat(start_time, sims, 1);
@@ -62,4 +75,6 @@ while ~isempty(time)
 end
 
 end
+
+%TODO: Add vectorization for different parameter values
 
