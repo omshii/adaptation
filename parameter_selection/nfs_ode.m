@@ -1,6 +1,12 @@
-%NFS Model
-
 function dydt = nfs_ode(t, y, params)
+%nfs_ode describes odes for nfs
+%
+%   t: the current time
+%   y: set of current reactant values, of the form [A B]
+%   params: set of parameters containing-
+%            k1, k2, k3, K3, k4, K4
+%
+%   dydt: set of calculated derivatives of the form [dA/dt dB/dt]
 
 A = y(1);
 B = y(2);

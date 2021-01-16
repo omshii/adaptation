@@ -1,9 +1,11 @@
 function [num_params] = filter_params(params, ode_func)
-%filter_params: Checks sensitivity and precision for parameter sets. 
-%   ode_func - function describing ode's for each set of parameters.
-%   Takes in M X N array - params, which is the random parameter sets. 
-%   Returns num_params - number of params found to be adapting.
-%   Writes params, with two additional columns for precision and sensitivity to file.  
+%filter_params checks adaptation sensitivity and precision for parameter sets.
+%
+%   params: array of N parameter sets, with M elements in each set.
+%   ode_func: describes odes on which params to be tested.
+%
+%   num_params: number of parameters in params satisfying
+%               sensitivity > 1 and precision > 10
 
 M = size(params, 1);
 N = size(params, 2);
@@ -15,8 +17,10 @@ B_0= 1*0.3088;
 start_time = 0;
 end_time = 500;
 
+%TODO: Use parfor
+
 for i = 1:M
-    
+
     [time,proteins]=ode15s(ode_func,[start_time, end_time],[A_0 B_0],[],params(i, :));
     
     slope = (proteins(end, 1) - proteins(end-1, 1))/(time(end, 1) - time(end-1, 1));
@@ -41,24 +45,19 @@ for i = 1:M
         O_peak2 = peaks(max_index + 1);
         
         if(O_peak1 > 2*O_peak2)
-            
             %Calculate oscillating sensitivity and precision
             sensitivity(i, 1) = abs(((O_peak - A_0)/A_0)/(1));
-            precision(i, 1) = abs((1)/(abs(A_0 - proteins(end, 1))/A_0));
-            
+            precision(i, 1) = abs((1)/(abs(A_0 - proteins(end, 1))/A_0));            
         else
-            
             sensitivity(i, 1) = -1;
             precision(i, 1) = -1;
-            
         end
         
-    else
-        
+    else        
         sensitivity(i, 1) = -1;
         precision(i, 1) = -1;
-        
     end
+    
 end
 
 params(:, N+1) = sensitivity;
@@ -66,6 +65,7 @@ params(:, N+2) = precision;
 
 num_params = length(params(params(:, N+1)>1 & params(:, N+2)>10));
 
+%TODO: Save params to file.
 
 
 
