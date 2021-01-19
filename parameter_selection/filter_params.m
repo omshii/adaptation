@@ -1,4 +1,4 @@
-function [num_params] = filter_params(params, ode_func)
+function [num_params, params] = filter_params(params, ode_func)
 %filter_params checks adaptation sensitivity and precision for parameter sets.
 %
 %   params: array of N parameter sets, with M elements in each set.
@@ -6,12 +6,19 @@ function [num_params] = filter_params(params, ode_func)
 %
 %   num_params: number of parameters in params satisfying
 %               sensitivity > 1 and precision > 10
+%   params: params array with added columns for
+%               sensitivity, precision, damped
 
 M = size(params, 1);
 N = size(params, 2);
 sensitivity = zeros(M, 1);
 precision = zeros(M, 1);
 
+% is one is oscillations are damped
+% (satisfying Opeak1 > 2*Opeak2)
+% else zero
+damped = zeros(M, 1); 
+                      
 A_0= 1*0.3931;
 B_0= 1*0.3088;
 start_time = 0;
@@ -23,49 +30,59 @@ for i = 1:M
 
     [time,proteins]=ode15s(ode_func,[start_time, end_time],[A_0 B_0],[],params(i, :));
     
-    slope = (proteins(end, 1) - proteins(end-1, 1))/(time(end, 1) - time(end-1, 1));
+    %Indices to check slopes at
+    index1 = find(time > 400);
+    index1 = index1(1);
     
-    peaks = findpeaks(proteins(:, 1));
-    peaks = abs(peaks - A_0);
+    index2 = find(time > 450);
+    index2 = index2(1);
     
-    num_peaks = length(peaks);
-    [max_peak, max_index] = max(peaks);
+    index3 = length(time);
     
-    if slope < 0.0001
+    %Check slope
+    slope1 = (proteins(index1, 1) - proteins(index1-1, 1))/(time(index1, 1) - time(index1-1, 1));
+    slope2 = (proteins(index2, 1) - proteins(index2-1, 1))/(time(index2, 1) - time(index2-1, 1));
+    slope3 = (proteins(index3, 1) - proteins(index3-1, 1))/(time(index3, 1) - time(index3-1, 1));
+    
+    if all([slope1 slope2 slope3] < 0.0001)
         
-        %Calculate regular sensitivity and precision
-        O_peak = max_peak;
+        %Calculate sensitivity and precision
+        O_peak = abs(A_0 - max(proteins(:, 1)));
         
         sensitivity(i, 1) = abs(((O_peak - A_0)/A_0)/(1));
         precision(i, 1) = abs((1)/(abs(A_0 - proteins(end, 1))/A_0));
-        
-    elseif (num_peaks > 1) && (max_index ~= length(peaks))
-        
-        O_peak1 = max_peak;
-        O_peak2 = peaks(max_index + 1);
-        
-        if(O_peak1 > 2*O_peak2)
-            %Calculate oscillating sensitivity and precision
-            sensitivity(i, 1) = abs(((O_peak - A_0)/A_0)/(1));
-            precision(i, 1) = abs((1)/(abs(A_0 - proteins(end, 1))/A_0));            
-        else
-            sensitivity(i, 1) = -1;
-            precision(i, 1) = -1;
-        end
         
     else        
         sensitivity(i, 1) = -1;
         precision(i, 1) = -1;
     end
     
+    peaks = findpeaks(proteins(:, 1));
+    num_peaks = length(peaks);    
+    
+    if (num_peaks > 1)
+        
+        [~, trough_indices] = findpeaks(-1*proteins(:, 1));
+        [max_peak, Opeak1_index] = max(peaks);
+        Opeak2_index = find(trough_indices > Opeak1_index);
+        Opeak2_index = Opeak2_index(1);
+        
+        O_peak1 = abs(A_0 - max_peak);
+        O_peak2 = abs(A_0 - proteins(Opeak2_index, 1)); 
+        
+        if(O_peak1 <= 2*O_peak2)
+            damped(i, 1) = 1;
+        end
+    end
+            
+    
 end
 
 params(:, N+1) = sensitivity;
 params(:, N+2) = precision;
+params(:, N+3) = damped;
 
-num_params = length(params(params(:, N+1)>1 & params(:, N+2)>10));
-
-%TODO: Save params to file.
+num_params = length(params(params(:, N+1)>0.5 & params(:, N+2)>5));
 
 
 
