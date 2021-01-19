@@ -14,7 +14,7 @@ N = size(params, 2);
 sensitivity = zeros(M, 1);
 precision = zeros(M, 1);
 
-% is one is oscillations are damped
+% is one if oscillations are damped
 % (satisfying Opeak1 > 2*Opeak2)
 % else zero
 damped = zeros(M, 1); 
@@ -24,9 +24,8 @@ B_0= 1*0.3088;
 start_time = 0;
 end_time = 500;
 
-%TODO: Use parfor
 
-for i = 1:M
+parfor i = 1:M
 
     [time,proteins]=ode15s(ode_func,[start_time, end_time],[A_0 B_0],[],params(i, :));
     
@@ -70,7 +69,7 @@ for i = 1:M
         O_peak1 = abs(A_0 - max_peak);
         O_peak2 = abs(A_0 - proteins(Opeak2_index, 1)); 
         
-        if(O_peak1 <= 2*O_peak2)
+        if(O_peak1 > 2*O_peak2)
             damped(i, 1) = 1;
         end
     end
