@@ -49,10 +49,8 @@ parfor i = 1:M
     peaks = findpeaks(proteins(:, 1));
     num_peaks = length(peaks); 
     
-    if all([slope1 slope2 slope3] < 0.0000001)
+    if all([slope1 slope2 slope3] < 0.00000001)
      
-    %if true
-        
         %Calculate sensitivity and precision
         O_peak = max(peaks);
         
