@@ -11,7 +11,7 @@ function dydt = ffs_ode(t, y, params)
 A = y(1);
 B = y(2);
 
-if(t > 10) 
+if(t > 500)
     I = 0.4;
 else
     I = 0.2;

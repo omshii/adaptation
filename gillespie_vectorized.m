@@ -13,7 +13,7 @@ function [time_vector, complete_trajectory] = gillespie_vectorized(reactants, re
 %   time_vector: array of timesteps
 %   complete_trajectory: 3D array of sims particle numbers over time
 
-reactants = repmat(reactants, sims, 1);
+
 time = repmat(start_time, sims, 1);
 time_vector = start_time:dt:end_time;
 time_array = repmat(time_vector, sims, 1);

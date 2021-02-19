@@ -18,22 +18,24 @@ precision = zeros(M, 1);
 % (satisfying Opeak1 > 2*Opeak2)
 % else zero
 damped = zeros(M, 1); 
-                      
-A_0= 1*0.3931;
-B_0= 1*0.3088;
-start_time = 0;
-end_time = 500;
 
+I_1= 0.2;
+I_2= 0.4;
+start_time = 0;
+end_time = 1000;
 
 parfor i = 1:M
 
-    [time,proteins]=ode15s(ode_func,[start_time, end_time],[A_0 B_0],[],params(i, :));
+    [time,proteins] = ode15s(ode_func,[start_time, end_time],[0 0],[],params(i, :));
+    
+    A_0_index = find(time > 450);
+    A_0 = proteins(A_0_index(1));
     
     %Indices to check slopes at
-    index1 = find(time > 400);
+    index1 = find(time > 800);
     index1 = index1(1);
     
-    index2 = find(time > 450);
+    index2 = find(time > 900);
     index2 = index2(1);
     
     index3 = length(time);
@@ -43,21 +45,24 @@ parfor i = 1:M
     slope2 = (proteins(index2, 1) - proteins(index2-1, 1))/(time(index2, 1) - time(index2-1, 1));
     slope3 = (proteins(index3, 1) - proteins(index3-1, 1))/(time(index3, 1) - time(index3-1, 1));
     
-    if all([slope1 slope2 slope3] < 0.0001)
+    %Find peaks
+    peaks = findpeaks(proteins(:, 1));
+    num_peaks = length(peaks); 
+    
+    if all([slope1 slope2 slope3] < 0.0000001)
+     
+    %if true
         
         %Calculate sensitivity and precision
-        O_peak = abs(A_0 - max(proteins(:, 1)));
+        O_peak = max(peaks);
         
-        sensitivity(i, 1) = abs(((O_peak - A_0)/A_0)/(1));
+        sensitivity(i, 1) = abs(((O_peak - A_0)/A_0)/((I_2 - I_1)/I_1));
         precision(i, 1) = abs((1)/(abs(A_0 - proteins(end, 1))/A_0));
         
     else        
         sensitivity(i, 1) = -1;
         precision(i, 1) = -1;
-    end
-    
-    peaks = findpeaks(proteins(:, 1));
-    num_peaks = length(peaks);    
+    end   
     
     if (num_peaks > 1)
         
@@ -81,10 +86,4 @@ params(:, N+1) = sensitivity;
 params(:, N+2) = precision;
 params(:, N+3) = damped;
 
-num_params = length(params(params(:, N+1)>0.5 & params(:, N+2)>5));
-
-
-
-
-
-
+num_params = length(params(params(:, N+1)>=1 & params(:, N+2)>=10));
