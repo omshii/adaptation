@@ -1,6 +1,6 @@
 function [nfs_num_params, nfs_params, ffs_num_params, ffs_params] = random_parameters()
 
-X = 1000;
+X = 100;
 
 % Generate X number of random parameter sets, and call filter_params.
 
@@ -54,3 +54,5 @@ save(erase(string(now), ".")+"_ffs_params_filtered.mat", "ffs_filtered_params");
 
 disp(ffs_num_params);
 
+
+%TODO: Weird assignment error?

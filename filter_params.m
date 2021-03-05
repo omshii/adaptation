@@ -27,12 +27,12 @@ end_time = 1000;
 options=odeset('AbsTol',1e-10,'RelTol',1e-10);
 
 parfor i = 1:M
-
+    
     [time,proteins] = ode15s(ode_func,[start_time, end_time],[0 0],options, params(i, :));
     
     A_0_index = find(time > 450);
     A_0 = proteins(A_0_index(1));
-    
+   
     %Indices to check slopes at
     index1 = find(time > 800);
     index1 = index1(1);
@@ -87,3 +87,5 @@ params(:, N+2) = precision;
 params(:, N+3) = damped;
 
 num_params = length(params(params(:, N+1)>=1 & params(:, N+2)>=10));
+
+end
