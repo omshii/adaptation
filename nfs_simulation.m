@@ -1,4 +1,4 @@
-%Simulation function
+%Simulation function, single run, non vectorized
 
 reactants = [0 0]; %A and B
 

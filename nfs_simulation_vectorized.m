@@ -11,9 +11,6 @@ param.B0 = 100;
 %Standard/known parameter set
 params = [2 2 10 0.01 4 0.01];
 
-%Filtered parameter sets
-params = [4.23354118529295,11.3563307343690,39.2079347911333,0.00288140155289634,0.219231168565055,0.00325351103623899];
-
 %Assign params
 param.k1 = params(1);
 param.k2 = params(2);
@@ -26,7 +23,10 @@ start_time = 0;
 end_time = 1000; %running time in seconds
 dt = 0.1; %in seconds
 sims = 500;
-reactants = repmat(reactants, sims, 1);
+
+%Extend for number of sims
+%This is being done here so that you can have different initial values 
+reactants = repmat(reactants, sims, 1); 
 
 [time_array1, reactants_array1] = gillespie_vectorized(reactants, reactions, @nfs_propensity_vectorized, param, start_time, 500, dt, sims);
 %Increase input stimulus after 1/2 of total time passes

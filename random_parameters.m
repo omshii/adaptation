@@ -1,6 +1,6 @@
 function [nfs_num_params, nfs_params, ffs_num_params, ffs_params] = random_parameters()
 
-X = 100;
+X = 1000;
 
 % Generate X number of random parameter sets, and call filter_params.
 
@@ -24,8 +24,11 @@ N = size(nfs_params, 2);
 
 [nfs_num_params, nfs_params] = filter_params(nfs_params, @nfs_ode);
 nfs_filtered_params = nfs_params((nfs_params(:, N+1)>=1 & nfs_params(:, N+2)>=10), :);
-save("10k_nfs_params.mat", "nfs_params");
-save("10k_nfs_params_filtered.mat", "nfs_filtered_params");
+save(erase(string(now), ".")+"_nfs_params.mat", "nfs_params");
+save(erase(string(now), ".")+"_nfs_params_filtered.mat", "nfs_filtered_params");
+
+disp(nfs_num_params);
+
 
 
 %For FFS
@@ -46,9 +49,8 @@ N = size(ffs_params, 2);
 
 [ffs_num_params, ffs_params] = filter_params(ffs_params, @ffs_ode);
 ffs_filtered_params = ffs_params((ffs_params(:, N+1)>=1 & ffs_params(:, N+2)>=10), :);
-save("10k_ffs_params.mat", "ffs_params");
-save("10k_ffs_params_filtered.mat", "ffs_filtered_params");
+save(erase(string(now), ".")+"_ffs_params.mat", "ffs_params");
+save(erase(string(now), ".")+"_ffs_params_filtered.mat", "ffs_filtered_params");
 
 disp(ffs_num_params);
-disp(nfs_num_params);
 

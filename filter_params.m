@@ -24,9 +24,11 @@ I_2= 0.4;
 start_time = 0;
 end_time = 1000;
 
+options=odeset('AbsTol',1e-10,'RelTol',1e-10);
+
 parfor i = 1:M
 
-    [time,proteins] = ode15s(ode_func,[start_time, end_time],[0 0],[],params(i, :));
+    [time,proteins] = ode15s(ode_func,[start_time, end_time],[0 0],options, params(i, :));
     
     A_0_index = find(time > 450);
     A_0 = proteins(A_0_index(1));
