@@ -26,7 +26,7 @@ end_time = 1000;
 
 options=odeset('AbsTol',1e-10,'RelTol',1e-10);
 
-parfor i = 1:M
+for i = 1:M
     
     [time,proteins] = ode15s(ode_func,[start_time, end_time],[0 0],options, params(i, :));
     
@@ -54,10 +54,14 @@ parfor i = 1:M
     if all([slope1 slope2 slope3] < 0.00000001)
      
         %Calculate sensitivity and precision
-        O_peak = max(peaks);
-        
-        sensitivity(i, 1) = abs(((O_peak - A_0)/A_0)/((I_2 - I_1)/I_1));
-        precision(i, 1) = abs((1)/(abs(A_0 - proteins(end, 1))/A_0));
+        if(num_peaks > 0)
+            O_peak = max(peaks);
+            sensitivity(i, 1) = abs(((O_peak - A_0)/A_0)/((I_2 - I_1)/I_1));
+            precision(i, 1) = abs((1)/(abs(A_0 - proteins(end, 1))/A_0));
+        else
+            sensitivity(i, 1) = 0;
+            precision(i, 1) = 0;
+        end
         
     else        
         sensitivity(i, 1) = -1;
