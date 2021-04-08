@@ -32,16 +32,14 @@ particle_numbers(:, :, 1) = reactants;
 counter = counter + 1;
 
 noisy_input = params.I*ones(size(reactants(:, 1)));
-size(noisy_input)
+
 I_lower_bound = 1 - noise_percent/100;
-I_upper_bound = 1 + noise_percent/100; 
+I_upper_bound = 1 + noise_percent/100;
 
 while ~isempty(time)
     
-    noisy_input = ((I_upper_bound-I_lower_bound)*rand() + I_lower_bound)*noisy_input(rand(size(noisy_input))>0.5);
-    
-    
-    
+    noisy_input = ((I_upper_bound-I_lower_bound)*rand(size(noisy_input)) + I_lower_bound)*params.I;
+
     v = propensity(reactants, params, noisy_input);
     h = sum(v, 2);
     
