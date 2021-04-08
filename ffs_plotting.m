@@ -52,7 +52,7 @@ end
 
 %% Deterministic simulation
 
-sims = 500;
+sims = 100;
 dt = 0.1;
 
 param.A0 = 100;
@@ -76,36 +76,27 @@ for i = 1:length(input)
         reactants = repmat([0 0], sims, 1);
 
         noise_percent = noise(j);
-        %param.I = I1;
-        
-        %[time_array, reactants_array, input_array] = noise_propagation(reactants, reactions, @ffs_noisy_propensity_vectorized, param, start_time, perturb_time, dt, sims, noise_percent);
         
         param.I = I1*input(i);
         
-        %reactants = reactants_array(:, :, end);
-        [time_array, reactants_array, input_array] = noise_propagation(reactants, reactions, @ffs_noisy_propensity_vectorized, param, start_time, end_time, dt, sims, noise_percent);
-        
-        %figure(fig_c);
-        %fig_c = fig_c + 1;
-        
-        %mean_reactants_array = mean(reactants_array, 1);
-        %mean_reactants_array = reshape(mean_reactants_array, 2, []);
+        [time_array, reactants_array, input_vector] = noise_propagation(reactants, reactions, @ffs_noisy_propensity_vectorized, param, start_time, end_time, dt, sims, noise_percent);
         
         index = find(time_array > perturb_time);
         index = index(1);
         reactants_array = reactants_array(:, :, index:end);
-        input_array = input_array(:, :, index:end);
+        input_vector = input_vector(index:end);
         
-        mean_A = mean(reactants_array, 3);
-        mean_A = mean_A(:, 1);
+        mean_reactants_array = mean(reactants_array, 1);
+        mean_reactants_array = reshape(mean_reactants_array, 2, []);
         
-        std_A = std(reactants_array, 0, 3);
-        std_A = std_A(:, 1);
+        mean_A = mean(mean_reactants_array(1, :));
+        
+        std_A = std(mean_reactants_array(1, :));
 
-        mean_I = mean(input_array, 3);
-        std_I = std(input_array, 0, 3);
+        mean_I = mean(input_vector);
+        std_I = std(input_vector);
 
-        noise_amplification(i, j) = mean((std_A./mean_A)./(std_I./mean_I));
+        noise_amplification(i, j) = (std_A/mean_A)/(std_I/mean_I);
         
         disp(noise(j));
         disp(input(i));

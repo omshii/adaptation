@@ -1,4 +1,4 @@
-function [time_vector, complete_trajectory, input_trajectory] = noise_propagation(reactants, reactions, propensity, params, start_time, end_time, dt, sims, noise_percent)
+function [time_vector, complete_trajectory, input_vector] = noise_propagation(reactants, reactions, propensity, params, start_time, end_time, dt, sims, noise_percent)
 %noise_propagation runs gillespie's algorithm a number of times with noisy input
 %
 %   reactants: two dimensional array of starting reactant values
@@ -18,8 +18,8 @@ time = repmat(start_time, sims, 1);
 time_vector = start_time:dt:end_time;
 time_array = repmat(time_vector, sims, 1);
 
-input_array = zeros(sims, 1, length(time_vector));
-input_trajectory = zeros(sims, 1, length(time_vector));
+%input_array = zeros(sims, 1, length(time_vector));
+%input_trajectory = zeros(sims, 1, length(time_vector));
 
 num_complete = 1;
 
@@ -31,16 +31,16 @@ counter = ones(sims, 1);
 particle_numbers(:, :, 1) = reactants;
 counter = counter + 1;
 
-noisy_input = params.I*ones(size(reactants(:, 1)));
-
 I_lower_bound = 1 - noise_percent/100;
 I_upper_bound = 1 + noise_percent/100;
 
+input_vector = ((I_upper_bound-I_lower_bound)*rand(size(time_vector)) + I_lower_bound)*params.I;
+input_array = repmat(input_vector, sims, 1);
+input = input_vector(1)*ones(sims, 1);
+
 while ~isempty(time)
     
-    noisy_input = ((I_upper_bound-I_lower_bound)*rand(size(noisy_input)) + I_lower_bound)*params.I;
-
-    v = propensity(reactants, params, noisy_input);
+    v = propensity(reactants, params, input);
     h = sum(v, 2);
     
     %Generate 2 random numbers
@@ -65,20 +65,19 @@ while ~isempty(time)
     while any(update)
         particle_numbers(sub2ind(size(particle_numbers), 1:sims, ones(1, sims), counter')) = reactants(:,1) .* update;
         particle_numbers(sub2ind(size(particle_numbers), 1:sims, ones(1, sims)*2, counter')) = reactants(:,2) .* update;
-        input_array(sub2ind(size(input_array), 1:sims, ones(1, sims), counter')) = noisy_input.*update;
+        input = ones(size(input)).*(input_array(counter));
         counter = counter+update;
         completed = counter > N;
         if any(completed)
             complete_trajectory(num_complete:num_complete+sum(completed)-1, :, :) = particle_numbers(completed, :, :);
-            input_trajectory(num_complete:num_complete+sum(completed)-1, :, :) = input_array(completed, :, :);
             num_complete = num_complete+sum(completed);
             counter(completed) = [];
             time(completed) = [];
             time_array(completed, :) = [];
             reactants(completed, :) = [];
-            noisy_input(completed, :) = [];
+            input(completed) = [];
+            input_array(completed, :) = [];
             particle_numbers(completed, :, :) = [];
-            input_array(completed, :, :) = [];
             sims = sims - sum(completed);
             if isempty(counter)
                 break
