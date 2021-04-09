@@ -1,6 +1,7 @@
 options=odeset('AbsTol',1e-10,'RelTol',1e-10);
 
-%input = [1.5 1 0.5];
+%input = [1.05 1 0.95];
+
 noise = [50 25];
 
 reactants = [0 0]; %A and B
@@ -22,16 +23,17 @@ perturb_time = 50;
 start_time = 0;
 end_time = 100;
 
-params = [10 100 0.1 0.001 1 I1 I2 perturb_time];
+params = [2 2 10 0.01 4 0.01 I1 I2 perturb_time];
 
 for i = 1:length(I1_array)
     
-    I2 = I2_array(i);
     I1 = I1_array(i);
+    I2 = I2_array(i);
     
-    params = [10 100 0.1 0.001 1 I1 I2 perturb_time];
+    params = [2 2 10 0.01 4 0.01 I1 I2 perturb_time];
     
-    [time,proteins] = ode15s(@ffs_ode_mod,[start_time, end_time],[0 0],options,params);
+    [time,proteins] = ode15s(@nfs_ode_mod,[start_time, end_time],[0 0],options,params);
+
     reactants = proteins(end, :);
 
     A_0_index = find(time < perturb_time);
@@ -60,16 +62,13 @@ param.k2 = params(2);
 param.k3 = params(3);
 param.K3 = params(4);
 param.k4 = params(5);
+param.K4 = params(6);
 
 start_time = 0;
 perturb_time = 100;
 end_time = 300;
 
-fig_c = 1;
-
 for i = 1:length(I1_array)
-    
-    param.I = I1_array(i);
     
     for j = 1:length(noise)
         
@@ -77,7 +76,9 @@ for i = 1:length(I1_array)
 
         noise_percent = noise(j);
         
-        [time_array, reactants_array, input_vector] = noise_propagation(reactants, reactions, @ffs_noisy_propensity_vectorized, param, start_time, end_time, dt, sims, noise_percent);
+        param.I = I1_array(i);
+        
+        [time_array, reactants_array, input_vector] = noise_propagation(reactants, reactions, @nfs_noisy_propensity_vectorized, param, start_time, end_time, dt, sims, noise_percent);
         
         index = find(time_array > perturb_time);
         index = index(1);
@@ -87,19 +88,21 @@ for i = 1:length(I1_array)
         mean_reactants_array = mean(reactants_array, 1);
         mean_reactants_array = reshape(mean_reactants_array, 2, []);
         
-        mean_A = mean(mean_reactants_array(1, :));
-        
+        mean_A = mean(mean_reactants_array(1, :));       
         std_A = std(mean_reactants_array(1, :));
 
+        mean_B = mean(mean_reactants_array(2, :));       
+        std_B = std(mean_reactants_array(2, :));
+        
         mean_I = mean(input_vector);
         std_I = std(input_vector);
-
+        
         noise_amplification(i, j) = (std_A/mean_A)/(std_I/mean_I);
-    
+        
     end
 end
 
 %% Save to file
 
-writematrix(susceptibility, "ffs_susceptibility.csv");
-writematrix(noise_amplification, "ffs_noise.csv");
+writematrix(susceptibility, "nfs_susceptibility.csv");
+writematrix(noise_amplification, "nfs_noise.csv");
