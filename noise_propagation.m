@@ -1,4 +1,4 @@
-function [time_vector, complete_trajectory, input_vector] = noise_propagation(reactants, reactions, propensity, params, start_time, end_time, dt, sims, noise_percent)
+function [time_vector, complete_trajectory, input_vector, input_trajectory] = noise_propagation(reactants, reactions, propensity, params, start_time, end_time, dt, sims, noise_percent)
 %noise_propagation runs gillespie's algorithm a number of times with noisy input
 %
 %   reactants: two dimensional array of starting reactant values
@@ -18,8 +18,7 @@ time = repmat(start_time, sims, 1);
 time_vector = start_time:dt:end_time;
 time_array = repmat(time_vector, sims, 1);
 
-%input_array = zeros(sims, 1, length(time_vector));
-%input_trajectory = zeros(sims, 1, length(time_vector));
+input_trajectory = zeros(sims, 1, length(time_vector));
 
 num_complete = 1;
 
@@ -90,5 +89,5 @@ end
 
 end
 
-%TODO: Add vectorization for different parameter values
+%TODO: Check the input trajectory
 
