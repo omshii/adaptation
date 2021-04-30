@@ -1,3 +1,7 @@
+% Script to submit random_parameters.m 
+% to Colgate's Turing cluster
+% Generate and store random parameter sets 
+
 c1 = parcluster('Turing');
 j1 = batch(c1, @random_parameters, 4, {}, 'Pool', 3);
 wait(j1);
