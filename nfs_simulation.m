@@ -1,4 +1,8 @@
-%Simulation function, single run, non vectorized
+% Plots one stochastic simulation over certain time and
+% parameters for nfs system. Uses gillespie.m (non-vectorized).
+
+% TODO: Make into function?
+%       Plot average of N simulations (could be useful for testing to compare with vectorized). 
 
 reactants = [0 0]; %A and B
 

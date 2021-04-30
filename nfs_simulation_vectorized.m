@@ -1,5 +1,5 @@
 % Plots the average of stochastic simulations over certain time and
-% parameters for nfs system. 
+% parameters for nfs system. Uses gillespie_vectorized.m (vectorized). 
 
 % TODO: Make into function?
 
