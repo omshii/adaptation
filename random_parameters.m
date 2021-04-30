@@ -6,6 +6,7 @@ function [nfs_num_params, nfs_params, ffs_num_params, ffs_params] = random_param
 %TODO: Add X as parameter to function
 
 X = 10000;
+str_stamp = erase(string(now), ".");
 
 %For NFS
 k1 = -1 + (2+1)*rand(X,1);
@@ -27,8 +28,8 @@ N = size(nfs_params, 2);
 
 [nfs_num_params, nfs_params] = filter_params(nfs_params, @nfs_ode);
 nfs_filtered_params = nfs_params((nfs_params(:, N+1)>=1 & nfs_params(:, N+2)>=10), :);
-save(erase(string(now), ".")+"_nfs_params.mat", "nfs_params");
-save(erase(string(now), ".")+"_nfs_params_filtered.mat", "nfs_filtered_params");
+save(str_stamp+"_nfs_params.mat", "nfs_params");
+save(str_stamp+"_nfs_params_filtered.mat", "nfs_filtered_params");
 
 disp(nfs_num_params);
 
@@ -52,7 +53,7 @@ N = size(ffs_params, 2);
 
 [ffs_num_params, ffs_params] = filter_params(ffs_params, @ffs_ode);
 ffs_filtered_params = ffs_params((ffs_params(:, N+1)>=1 & ffs_params(:, N+2)>=10), :);
-save(erase(string(now), ".")+"_ffs_params.mat", "ffs_params");
-save(erase(string(now), ".")+"_ffs_params_filtered.mat", "ffs_filtered_params");
+save(str_stamp+"_ffs_params.mat", "ffs_params");
+save(str_stamp+"_ffs_params_filtered.mat", "ffs_filtered_params");
 
 disp(ffs_num_params);
