@@ -1,5 +1,6 @@
 function [reaction_rates] = nfs_propensity_vectorized(reactants, params)
-%nfs_propensity_vectorized describes reaction rates for nfs
+%nfs_propensity_vectorized describes reaction rates for nfs, but for
+%                          gillespie_vectorized
 %
 %   reactants: two dimensional array of current reactant values
 %   parameters: struct of parameters containing:

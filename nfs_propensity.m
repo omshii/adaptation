@@ -1,5 +1,5 @@
 function [reaction_rates] = nfs_propensity(reactants, params)
-%nfs_propensity describes reaction rates for nfs
+%nfs_propensity describes reaction rates for nfs for gillespie.
 %
 %   reactants: one dimensional array of current reactant values
 %   parameters: struct of parameters containing:
