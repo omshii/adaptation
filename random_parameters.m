@@ -4,6 +4,7 @@ function [nfs_num_params, nfs_params, ffs_num_params, ffs_params] = random_param
 %                   file.
 
 %TODO: Add X as parameter to function
+%      Add X to filenames
 
 X = 10000;
 str_stamp = erase(string(now), ".");
