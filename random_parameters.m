@@ -1,8 +1,11 @@
 function [nfs_num_params, nfs_params, ffs_num_params, ffs_params] = random_parameters()
+%random_parameters: generates X random parameters for nfs and ffs systems
+%                   ,filters them using filter_parameters, and writes to
+%                   file.
+
+%TODO: Add X as parameter to function
 
 X = 10000;
-
-% Generate X number of random parameter sets, and call filter_params.
 
 %For NFS
 k1 = -1 + (2+1)*rand(X,1);
