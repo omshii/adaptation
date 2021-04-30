@@ -1,4 +1,4 @@
-function [time_vector, complete_trajectory, input_vector, input_trajectory] = noise_propagation(reactants, reactions, propensity, params, start_time, end_time, dt, sims, noise_percent)
+function [time_vector, complete_trajectory, input_vector] = noise_propagation(reactants, reactions, propensity, params, start_time, end_time, dt, sims, noise_percent)
 %noise_propagation runs gillespie's algorithm a number of times with noisy input
 %
 %   reactants: two dimensional array of starting reactant values
@@ -13,6 +13,12 @@ function [time_vector, complete_trajectory, input_vector, input_trajectory] = no
 %
 %   time_vector: array of timesteps
 %   complete_trajectory: 3D array of sims particle numbers over time
+%   input_vector: randomized input used (for testing)
+
+% NOTE: Thought the vectorization w/ randomized input could be causing
+% errors, so input_trajectory stores the trajectory of input for all the
+% simulations for testing - as per my knowledge, it seems to be working
+% fine. 
 
 time = repmat(start_time, sims, 1);
 time_vector = start_time:dt:end_time;
@@ -23,7 +29,7 @@ input_trajectory = zeros(sims, 1, length(time_vector));
 num_complete = 1;
 
 particle_numbers = zeros(sims, size(reactants, 2), length(time_vector));
-complete_trajectory = zeros(sims, size(reactants, 2), length(time_vector));
+complete_trajectory = zeros(sims, size(reactants, 2)+1, length(time_vector));
 N = length(time_vector);
 counter = ones(sims, 1);
 
@@ -64,17 +70,20 @@ while ~isempty(time)
     while any(update)
         particle_numbers(sub2ind(size(particle_numbers), 1:sims, ones(1, sims), counter')) = reactants(:,1) .* update;
         particle_numbers(sub2ind(size(particle_numbers), 1:sims, ones(1, sims)*2, counter')) = reactants(:,2) .* update;
-        input = ones(size(input)).*(input_array(counter));
+        input_trajectory(sub2ind(size(input_trajectory), 1:sims, ones(1, sims), counter')) = input .* update;
+        input = input_array(sub2ind(size(input_array), 1:sims, counter'))';
         counter = counter+update;
         completed = counter > N;
         if any(completed)
-            complete_trajectory(num_complete:num_complete+sum(completed)-1, :, :) = particle_numbers(completed, :, :);
+            complete_trajectory(num_complete:num_complete+sum(completed)-1, 1:end-1, :) = particle_numbers(completed, :, :);
+            complete_trajectory(num_complete:num_complete+sum(completed)-1, end, :) = input_trajectory(completed, :, :);
             num_complete = num_complete+sum(completed);
             counter(completed) = [];
             time(completed) = [];
             time_array(completed, :) = [];
             reactants(completed, :) = [];
             input(completed) = [];
+            input_trajectory(completed, :, :) = [];
             input_array(completed, :) = [];
             particle_numbers(completed, :, :) = [];
             sims = sims - sum(completed);
@@ -88,6 +97,4 @@ while ~isempty(time)
 end
 
 end
-
-%TODO: Check the input trajectory
 
