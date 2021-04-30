@@ -1,3 +1,8 @@
+% Plots the average of stochastic simulations over certain time and
+% parameters for ffs system. Uses gillespie_vectorized.m (vectorized). 
+
+% TODO: Make into function?
+
 reactants = [0 0]; %A and B
 
 %A production, A degradation, B production, B degradation
@@ -11,6 +16,8 @@ param.B0 = 100;
 %Standard/known parameter set
 params = [10 100 0.1 0.001 1];
 
+
+
 %Assign params
 param.k1 = params(1);
 param.k2 = params(2);
@@ -19,20 +26,20 @@ param.K3 = params(4);
 param.k4 = params(5);
 
 start_time = 0;
-end_time = 1000; %running time in seconds
+end_time = 300; %running time in seconds
 dt = 0.1; %in seconds
-sims = 500;
+sims = 100;
 
 %Extend for number of sims
 %This is being done here so that you can have different initial values 
 reactants = repmat(reactants, sims, 1);
 
-[time_array1, reactants_array1] = gillespie_vectorized(reactants, reactions, @ffs_propensity_vectorized, param, start_time, 500, dt, sims);
+[time_array1, reactants_array1] = gillespie_vectorized(reactants, reactions, @ffs_propensity_vectorized, param, start_time, 100, dt, sims);
 %Increase input stimulus after 1/2 of total time passes
 param.I = 0.4;
 reactants = reactants_array1(:, :, end);
 
-[time_array2, reactants_array2] = gillespie_vectorized(reactants, reactions, @ffs_propensity_vectorized, param, 500, end_time, dt, sims);
+[time_array2, reactants_array2] = gillespie_vectorized(reactants, reactions, @ffs_propensity_vectorized, param, 100, end_time, dt, sims);
 
 time_array = cat(2, time_array1, time_array2);
 reactants_array = cat(3, reactants_array1, reactants_array2);

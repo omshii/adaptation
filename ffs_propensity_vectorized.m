@@ -1,5 +1,5 @@
 function [reaction_rates] = ffs_propensity_vectorized(reactants, params)
-%nfs_propensity_vectorized describes reaction rates for nfs
+%ffs_propensity_vectorized describes reaction rates for ffs
 %
 %   reactants: two dimensional array of current reactant values
 %   parameters: struct of parameters containing:
