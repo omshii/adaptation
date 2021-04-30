@@ -14,7 +14,7 @@ ffs_noise = reshape(readmatrix("ffs_noise_1i_10n.csv"), [], 1);
 plot(ffs_susceptibility, ffs_noise, '.r', 'MarkerSize', 20);
 hold on
 
-legend('no feedback', 'feed forward');
+legend('negative feedback', 'feed forward');
 
 xlabel("susceptibility");
 ylabel("noise amplification");
