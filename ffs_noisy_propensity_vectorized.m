@@ -1,5 +1,6 @@
 function [reaction_rates] = ffs_noisy_propensity_vectorized(reactants, params, I)
-%nfs_propensity_vectorized describes reaction rates for nfs
+%ffs_noisy_propensity_vectorized describes reaction rates for ffs with diff
+%                                inputs across sims
 %
 %   reactants: two dimensional array of current reactant values
 %   parameters: struct of parameters containing:

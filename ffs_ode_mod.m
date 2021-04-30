@@ -1,5 +1,5 @@
  function dydt = ffs_ode_mod(t, y, params)
-%ffs_ode describes odes for ffs
+%ffs_ode_mod describes odes for ffs with varying input
 %
 %   t: the current time
 %   y: set of current reactant values, of the form [A B]
